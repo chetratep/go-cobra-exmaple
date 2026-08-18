@@ -1,0 +1,21 @@
+name: PR Review
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for TODOs
+        run: |
+          if grep -r "TODO" --include="*.ts" --include="*.js" .; then
+            echo "::warning::Found TODO comments in changed files"
+          fi
+      - name: Require PR description
+        run: |
+          if [ -z "${{ github.event.pull_request.body }}" ]; then
+            echo "::error::PR description is required"
+            exit 1
+          fi
